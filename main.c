@@ -85,10 +85,10 @@ void enableBufferedInput() {
 }
 
 void aguardarTecla() {
-    int c;
+    disableBufferedInput();
     printf("\nPressione qualquer tecla para voltar ao menu principal...");
-    while ((c = getchar()) != '\n' && c != EOF);
     getchar();
+    enableBufferedInput();
 }
 
 void limparTerminal() {
