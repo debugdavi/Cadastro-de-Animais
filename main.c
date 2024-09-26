@@ -492,18 +492,18 @@ void deletarCadastro(Animal *animais, int *totalAnimais) {
 }
 
 void listarAlergias(Animal *animais, int totalAnimais) {
-    char nome[20];
+    int id;
     int encontrado = 0;
     limparTerminal();
     imprimirTitulo(BG_BRIGHT_BLUE "💊 LISTAR ALERGIAS 💊" RESET);
 
-    printf(BRIGHT_BLUE "Digite o nome do animal para listar alergias: " RESET);
-    scanf(" %[^\n]", nome);
+    printf(BRIGHT_BLUE "Digite o ID do animal para listar alergias: " RESET);
+    scanf(" %d", &id);
 
     limparTerminal();
     imprimirTitulo(BG_BRIGHT_BLUE "💊 LISTAR ALERGIAS 💊" RESET);
     for (int i = 0; i < totalAnimais; i++) {
-        if (strcmp(animais[i].nomeanimal, nome) == 0) {
+        if (animais[i].id == id) {
             printf(BRIGHT_BLUE "Alergias de %s:" RESET "\n", animais[i].nomeanimal);
             printf("════════════════════════════════════════════════════════════════════════════════\n");
 
@@ -538,52 +538,13 @@ void listarAlergias(Animal *animais, int totalAnimais) {
     aguardarTecla();
 }
 
-/*void listarAlergias(Animal *animais, int totalAnimais) {
-    char nome[20];
-    int encontrado = 0;
-    limparTerminal();
-    imprimirTitulo(BG_BRIGHT_BLUE "💊 LISTAR ALERGIAS 💊" RESET);
-
-    printf(BRIGHT_BLUE "Digite o nome do animal para listar alergias: " RESET);
-    scanf(" %[^\n]", nome);
-
-    limparTerminal();
-    imprimirTitulo(BG_BRIGHT_BLUE "💊 LISTAR ALERGIAS 💊" RESET);
-    for (int i = 0; i < totalAnimais; i++) {
-        if (strcmp(animais[i].nomeanimal, nome) == 0) {
-            printf(BRIGHT_BLUE "Alergias de %s:" RESET "\n", animais[i].nomeanimal);
-            printf("════════════════════════════════════════════════════════════════════════════════\n");
-
-            for (int j = 0; j < MAX && strlen(animais[i].alergia[j].descricao) > 0; j++) {
-                if (j % 2 == 0) {
-                    printf(MAGENTA);
-                } else {
-                    printf(BLUE);
-                }
-
-                printf("  %-18s \n" RESET, animais[i].alergia[j].descricao);
-            }
-
-            printf("════════════════════════════════════════════════════════════════════════════════\n");
-            encontrado = 1;
-            break;
-        }
-    }
-
-    if (!encontrado) {
-        printf(RED "Animal não encontrado.\n" RESET);
-    }
-
-    aguardarTecla();
-}*/
-
 void listarVacinas(Animal *animais, int totalAnimais) {
     int id;
     int encontrado = 0;
     limparTerminal();
     imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
 
-    printf(MAGENTA "Digite o id do animal para listar vacinas: " RESET);
+    printf(MAGENTA "Digite o ID do animal para listar vacinas: " RESET);
     scanf(" %d", &id);
 
     limparTerminal();
