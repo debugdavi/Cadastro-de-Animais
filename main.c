@@ -171,20 +171,23 @@ void printMenu(int selected) {
     
     printf(selected == 1 ? " -> " : "    ");
     printf("📂 Mostrar dados\n");
-    
+
     printf(selected == 2 ? " -> " : "    ");
-    printf("📝 Atualizar dados\n");
+    printf("📋 Mostrar dados de um animal\n");
     
     printf(selected == 3 ? " -> " : "    ");
-    printf("❌ Deletar dados\n");
+    printf("📝 Atualizar dados\n");
     
     printf(selected == 4 ? " -> " : "    ");
-    printf("💊 Listar alergias\n");
+    printf("❌ Deletar dados\n");
     
     printf(selected == 5 ? " -> " : "    ");
+    printf("💊 Listar alergias\n");
+    
+    printf(selected == 6 ? " -> " : "    ");
     printf("💉 Listar vacinas\n");
 
-    printf(selected == 6 ? " -> " : "    ");
+    printf(selected == 7 ? " -> " : "    ");
     printf("⛔ Sair\n");
 }
 
@@ -313,6 +316,55 @@ void listarAnimais(Animal *animais, int totalAnimais) {
     printf("════════════════════════════════════════════════════════════════════════════════\n");
 
     aguardarTeclaSemInte();
+}
+
+void mostrarAnimal(Animal *animais, int totalAnimais){
+    int id;
+    int encontrado = 0;
+    int escolha;
+    int continuar = 1;
+
+    limparTerminal();
+    imprimirTitulo(BG_YELLOW "🐰 DADOS COMPLETOS 🐶" RESET);
+
+    printf(YELLOW "Digite o ID do animal que deseja ver todos os dados: " RESET);
+    scanf(" %d", &id);
+
+    for (int i = 0; i < totalAnimais; i++) {
+        if (animais[i].id == id) {
+            encontrado = 1;
+            limparTerminal();
+            imprimirTitulo(BG_YELLOW "🐰 DADOS COMPLETOS 🐶" RESET);
+
+            printf(YELLOW "1. Tutor           :" RESET "%s\n", animais[i].tutor);
+            printf(YELLOW "2. Contato         :" RESET "%s\n", animais[i].contato);
+            printf(YELLOW "3. Nome do Animal  :" RESET "%s\n", animais[i].nomeanimal);
+            printf(YELLOW "4. Idade           :" RESET "%d\n", animais[i].idade);
+            printf(YELLOW "5. Cor             :" RESET "%s\n", animais[i].cor);
+            printf(YELLOW "6. Sexo            :" RESET "%s\n", animais[i].sexo);
+            printf(YELLOW "7. Espécie         :" RESET "%s\n", animais[i].especie);
+
+            printf(YELLOW "8. Alergias:" RESET "\n");
+            for (int j = 0; j < MAX; j++) {
+                if (strlen(animais[i].alergia[j].descricao) > 0) {
+                    printf("   %d. %s\n\n", j + 1, animais[i].alergia[j].descricao);
+                }
+            }
+
+            printf(YELLOW "9. Vacinas:" RESET "\n");
+            for (int j = 0; j < MAX; j++) {
+                if (strlen(animais[i].vac[j].nome) > 0) {
+                    printf("   %d. Nome: %s\n   Data de Aplicação : %s\n   Data de Vencimento: %s\n\n", j + 1, animais[i].vac[j].nome, animais[i].vac[j].dataapl, animais[i].vac[j].datavec);
+                }
+            }
+        }
+    }
+
+    if (!encontrado) {
+        printf(RED "Animal não encontrado." RESET "\n");
+    }
+
+    aguardarTecla();
 }
 
 void atualizarCadastro(Animal *animais, int totalAnimais) {
@@ -674,6 +726,61 @@ int main() {
             getchar(); 
             switch(getchar()) { 
                 case UP_ARROW:
+                    selected = (selected == 0) ? 7 : selected - 1;
+                    break;
+                case DOWN_ARROW:
+                    selected = (selected == 7) ? 0 : selected + 1;
+                    break;
+            }
+        } else if (key == ENTER) {
+            switch (selected) {
+                case 0:
+                    cadastrarAnimal(&animais[totalAnimais]);
+                    totalAnimais++;
+                    break;
+                case 1:
+                    listarAnimais(animais, totalAnimais);
+                    break;
+                case 2:
+                    mostrarAnimal(animais, totalAnimais);
+                break;
+                case 3:
+                    atualizarCadastro(animais, totalAnimais);
+                    break;
+                case 4:
+                    deletarCadastro(animais, &totalAnimais);
+                    break;
+                case 5:
+                    listarAlergias(animais, totalAnimais);
+                    break;
+                case 6:
+                    listarVacinas(animais, totalAnimais);
+                    break;
+                case 7: 
+                    exit(0);
+                    break;
+            }
+        }
+    }
+}
+/*int main() {
+    Animal animais[MAX];
+    inicializarAnimais(animais);
+    int totalAnimais = 5;
+    int selected = 0;
+    char key;
+
+
+    while (1) {
+        printMenu(selected);
+        disableBufferedInput();
+        key = getchar();
+        enableBufferedInput();
+
+        if (key == '\033') {
+            getchar(); 
+            switch(getchar()) { 
+                case UP_ARROW:
                     selected = (selected == 0) ? 6 : selected - 1;
                     break;
                 case DOWN_ARROW:
@@ -707,4 +814,4 @@ int main() {
             }
         }
     }
-}
+}*/
