@@ -47,6 +47,7 @@
 #define BG_BRIGHT_WHITE   "\033[107m"
 #define RESET "\033[0m"
 
+int ultimo_id = 5;
 
 typedef struct Alergias {
     char descricao[50];
@@ -59,6 +60,7 @@ typedef struct Vacinas {
 } Vacinas;
 
 typedef struct Animal {
+    int id;
     char tutor[40];
     char contato[30];
     char nomeanimal[20];
@@ -84,10 +86,17 @@ void enableBufferedInput() {
     tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
 
-void aguardarTecla() {
+void aguardarTecla() {       //FUNÇÃO CRIADA PARA LISTAGEM COM ENTRADA
     disableBufferedInput();
     printf("\nPressione qualquer tecla para voltar ao menu principal...");
     while (getchar() != '\n');
+    getchar();
+    enableBufferedInput();
+}
+
+void aguardarTeclaSemInte() {  //FUNÇÃO CRIADA PARA LISTAGEM SEM ENTRADA
+    disableBufferedInput();
+    printf("\nPressione qualquer tecla para voltar ao menu principal...");
     getchar();
     enableBufferedInput();
 }
@@ -180,6 +189,8 @@ void printMenu(int selected) {
 }
 
 void cadastrarAnimal(Animal *animal) {
+    ultimo_id++;
+    animal->id = ultimo_id;
     int quant;
 
     limparTerminal();
@@ -276,12 +287,12 @@ void listarAnimais(Animal *animais, int totalAnimais) {
 
     if (totalAnimais == 0) {
         printf(RED "Nenhum animal cadastrado.\n" RESET);
-        aguardarTecla();
+        aguardarTeclaSemInte();
         return;
     }
 
     printf("════════════════════════════════════════════════════════════════════════════════\n");
-    printf(CYAN "  %-18s │ %-18s │ %-18s │ %-18s \n" RESET, "Nome", "Tutor", "Especie", "Cor");
+    printf(CYAN "  %-4s | %-14s │ %-14s │ %-14s │ %-14s \n" RESET, "ID", "Nome", "Tutor", "Especie", "Cor");
     printf("════════════════════════════════════════════════════════════════════════════════\n");
 
     for (int i = 0; i < totalAnimais; i++) {
@@ -291,7 +302,8 @@ void listarAnimais(Animal *animais, int totalAnimais) {
             printf(BLUE);
         }
 
-        printf("  %-18s │ %-18s │ %-18s │ %-18s  \n" RESET,
+        printf(" %-4d | %-14s │ %-14s │ %-14s │ %-14s  \n" RESET,
+            animais[i].id,
             animais[i].nomeanimal,
             animais[i].tutor,
             animais[i].especie,
@@ -300,7 +312,7 @@ void listarAnimais(Animal *animais, int totalAnimais) {
 
     printf("════════════════════════════════════════════════════════════════════════════════\n");
 
-    aguardarTecla();
+    aguardarTeclaSemInte();
 }
 
 void atualizarCadastro(Animal *animais, int totalAnimais) {
@@ -659,6 +671,7 @@ void listarVacinas(Animal *animais, int totalAnimais) {
 } */
 
 void inicializarAnimais(Animal animais[]){
+    animais[0].id = 1;
     strcpy(animais[0].tutor, "Davi Lucas");
     strcpy(animais[0].contato, "(88) 98765-4321");
     strcpy(animais[0].nomeanimal, "Emilia");
@@ -671,6 +684,7 @@ void inicializarAnimais(Animal animais[]){
     strcpy(animais[0].vac[0].dataapl, "10/01/2023");
     strcpy(animais[0].vac[0].datavec, "10/01/2024");
 
+    animais[1].id = 2;
     strcpy(animais[1].tutor, "Joyce Vieira");
     strcpy(animais[1].contato, "(88) 99876-5432");
     strcpy(animais[1].nomeanimal, "Tuko Jr");
@@ -683,6 +697,7 @@ void inicializarAnimais(Animal animais[]){
     strcpy(animais[1].vac[0].dataapl, "15/02/2023");
     strcpy(animais[1].vac[0].datavec, "15/02/2024");
 
+    animais[2].id = 3;
     strcpy(animais[2].tutor, "William Mendes");
     strcpy(animais[2].contato, "(88) 91234-5678");
     strcpy(animais[2].nomeanimal, "Jade");
@@ -695,6 +710,8 @@ void inicializarAnimais(Animal animais[]){
     strcpy(animais[2].vac[0].dataapl, "05/03/2023");
     strcpy(animais[2].vac[0].datavec, "05/03/2024");
 
+
+    animais[3].id = 4;
     strcpy(animais[3].tutor, "Luidy Farias");
     strcpy(animais[3].contato, "(88) 95678-1234");
     strcpy(animais[3].nomeanimal, "Lady");
@@ -707,6 +724,7 @@ void inicializarAnimais(Animal animais[]){
     strcpy(animais[3].vac[0].dataapl, "20/04/2023");
     strcpy(animais[3].vac[0].datavec, "20/04/2024");
 
+    animais[4].id = 5;
     strcpy(animais[4].tutor, "Joyce Vieira");
     strcpy(animais[4].contato, "(88) 99876-5432");
     strcpy(animais[4].nomeanimal, "Louis");
