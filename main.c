@@ -456,15 +456,15 @@ void atualizarCadastro(Animal *animais, int totalAnimais) {
 }
 
 void deletarCadastro(Animal *animais, int *totalAnimais) {
-    char nome[20];
+    int id;
     int encontrado = 0;
 
     limparTerminal();
     imprimirTitulo(BG_RED "❌ DELETAR DADOS ❌" RESET);
 
-    printf(RED "🠊 Digite o nome do animal que deseja deletar" RESET "\n");
-    if (scanf(" %[^\n]", nome) != 1) {
-        printf(RED "Erro na leitura do nome." RESET "\n");
+    printf(RED "🠊 Digite o ID do animal que deseja deletar" RESET "\n");
+    if (scanf(" %d", &id) != 1) {
+        printf(RED "Erro na leitura do ID." RESET "\n");
         aguardarTecla();
         return;
     }
@@ -473,7 +473,7 @@ void deletarCadastro(Animal *animais, int *totalAnimais) {
     imprimirTitulo(BG_RED "❌ DELETAR DADOS ❌" RESET);
 
     for (int i = 0; i < *totalAnimais; i++) {
-        if (strcmp(animais[i].nomeanimal, nome) == 0) {
+        if (animais[i].id == id) {
             for (int j = i; j < *totalAnimais - 1; j++) {
                 animais[j] = animais[j + 1];
             }
