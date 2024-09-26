@@ -578,18 +578,18 @@ void listarAlergias(Animal *animais, int totalAnimais) {
 }*/
 
 void listarVacinas(Animal *animais, int totalAnimais) {
-    char nome[20];
+    int id;
     int encontrado = 0;
     limparTerminal();
     imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
 
-    printf(MAGENTA "Digite o nome do animal para listar vacinas: " RESET);
-    scanf(" %[^\n]", nome);
+    printf(MAGENTA "Digite o id do animal para listar vacinas: " RESET);
+    scanf(" %d", &id);
 
     limparTerminal();
     imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
     for (int i = 0; i < totalAnimais; i++) {
-        if (strcmp(animais[i].nomeanimal, nome) == 0) {
+        if (animais[i].id == id) {
             printf(MAGENTA "Vacinas de %s:" RESET "\n", animais[i].nomeanimal);
             printf("════════════════════════════════════════════════════════════════════════════════\n");
             printf(MAGENTA "  %-18s │ %-18s │ %-18s \n" RESET, "Nome", "Aplicacao", "Vencimento");
@@ -626,49 +626,6 @@ void listarVacinas(Animal *animais, int totalAnimais) {
 
     aguardarTecla();
 }
-
-/*void listarVacinas(Animal *animais, int totalAnimais) {
-    char nome[20];
-    int encontrado = 0;
-    limparTerminal();
-    imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
-
-    printf(MAGENTA "Digite o nome do animal para listar vacinas: " RESET);
-    scanf(" %[^\n]", nome);
-
-    limparTerminal();
-    imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
-    for (int i = 0; i < totalAnimais; i++) {
-        if (strcmp(animais[i].nomeanimal, nome) == 0) {
-            printf(MAGENTA "Vacinas de %s:" RESET "\n", animais[i].nomeanimal);
-            printf("════════════════════════════════════════════════════════════════════════════════\n");
-            printf(MAGENTA "  %-18s │ %-18s │ %-18s \n" RESET, "Nome", "Aplicacao", "Vencimento");
-            printf("════════════════════════════════════════════════════════════════════════════════\n");
-
-
-            for (int j = 0; j < MAX && strlen(animais[i].vac[j].nome) > 0; j++) {
-                if (j % 2 == 0) {
-                    printf(BRIGHT_BLUE);
-                } else {
-                    printf(BLUE);
-                }
-
-                printf("  %-18s │ %-18s │ %-18s \n" RESET,
-                    animais[i].vac[j].nome, animais[i].vac[j].dataapl, animais[i].vac[j].datavec);
-            }
-
-            printf("════════════════════════════════════════════════════════════════════════════════\n");
-            encontrado = 1;
-            break;
-        }
-    }
-
-    if (!encontrado) {
-        printf(RED "Animal não encontrado.\n" RESET);
-    }
-
-    aguardarTecla();
-} */
 
 void inicializarAnimais(Animal animais[]){
     animais[0].id = 1;
