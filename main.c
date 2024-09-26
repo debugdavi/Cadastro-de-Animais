@@ -191,6 +191,24 @@ void printMenu(int selected) {
     printf("⛔ Sair\n");
 }
 
+char* primeiroNome(const char *nomeCompleto) {
+    char *posicaoEspaco = strchr(nomeCompleto, ' ');
+
+    if (posicaoEspaco != NULL) {
+        int tamanhoNome = posicaoEspaco - nomeCompleto;
+
+        char *nomeSemEspaco = (char*)malloc(tamanhoNome + 1);
+        strncpy(nomeSemEspaco, nomeCompleto, tamanhoNome);
+        nomeSemEspaco[tamanhoNome] = '\0';
+
+        return nomeSemEspaco;
+    } else {
+        char *nomeCompletoCopia = (char*)malloc(strlen(nomeCompleto) + 1);
+        strcpy(nomeCompletoCopia, nomeCompleto);
+        return nomeCompletoCopia;
+    }
+}
+
 void cadastrarAnimal(Animal *animal) {
     ultimo_id++;
     animal->id = ultimo_id;
@@ -284,15 +302,75 @@ void cadastrarAnimal(Animal *animal) {
     aguardarTecla();
 }
 
+void ordenarPorNome(Animal *animais, int totalAnimais) {
+    Animal temp;
+    for (int i = 0; i < totalAnimais - 1; i++) {
+        for (int j = 0; j < totalAnimais - i - 1; j++) {
+            if (strcmp(animais[j].nomeanimal, animais[j + 1].nomeanimal) > 0) {
+                temp = animais[j];
+                animais[j] = animais[j + 1];
+                animais[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void ordenarPorTutor(Animal *animais, int totalAnimais) {
+    Animal temp;
+    for (int i = 0; i < totalAnimais - 1; i++) {
+        for (int j = 0; j < totalAnimais - i - 1; j++) {
+            if (strcmp(animais[j].tutor, animais[j + 1].tutor) > 0) {
+                temp = animais[j];
+                animais[j] = animais[j + 1];
+                animais[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void ordenarPorID(Animal *animais, int totalAnimais) {
+    Animal temp;
+    for (int i = 0; i < totalAnimais - 1; i++) {
+        for (int j = 0; j < totalAnimais - i - 1; j++) {
+            if (animais[j].id > animais[j + 1].id) {
+                temp = animais[j];
+                animais[j] = animais[j + 1];
+                animais[j + 1] = temp;
+            }
+        }
+    }
+}
+
 void listarAnimais(Animal *animais, int totalAnimais) {
     limparTerminal();
+    int escolha = 0;
     imprimirTitulo(BG_BRIGHT_MAGENTA "📂 LISTAR ANIMAIS CADASTRADOS 📂" RESET);
 
+    printf(CYAN "Como você quer ordenar a listagem dos animais?\n1. Por animal 🐶😺\n2. Por tutor 🧑👧\n3. Por ID 🔢" RESET "\n");
+    scanf(" %d", &escolha);
+
+    while(escolha != 1 && escolha != 2 && escolha != 3){
+        printf(CYAN "Como você quer ordenar a listagem dos animais?\n1. Por animal 🐶😺\n2. Por tutor 🧑👧" RESET "\n");
+        scanf(" %d", &escolha);
+    }
+
+    if(escolha == 1){
+        ordenarPorNome(animais, totalAnimais);
+    }else if(escolha == 2){
+        ordenarPorTutor(animais, totalAnimais);
+    }else if(escolha == 3){
+        ordenarPorID(animais, totalAnimais);
+    }
+    limparTerminal();
+
+
+    imprimirTitulo(BG_BRIGHT_MAGENTA "📂 LISTAR ANIMAIS CADASTRADOS 📂" RESET);
     if (totalAnimais == 0) {
         printf(RED "Nenhum animal cadastrado.\n" RESET);
-        aguardarTeclaSemInte();
+        aguardarTecla();
         return;
     }
+
 
     printf("════════════════════════════════════════════════════════════════════════════════\n");
     printf(CYAN "  %-4s | %-14s │ %-14s │ %-14s │ %-14s \n" RESET, "ID", "Nome", "Tutor", "Especie", "Cor");
@@ -307,15 +385,15 @@ void listarAnimais(Animal *animais, int totalAnimais) {
 
         printf(" %-4d | %-14s │ %-14s │ %-14s │ %-14s  \n" RESET,
             animais[i].id,
-            animais[i].nomeanimal,
-            animais[i].tutor,
+            primeiroNome(animais[i].nomeanimal),
+            primeiroNome(animais[i].tutor),
             animais[i].especie,
             animais[i].cor);
     }
 
     printf("════════════════════════════════════════════════════════════════════════════════\n");
 
-    aguardarTeclaSemInte();
+    aguardarTecla();
 }
 
 void mostrarAnimal(Animal *animais, int totalAnimais){
