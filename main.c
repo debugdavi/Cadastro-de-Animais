@@ -316,7 +316,7 @@ void listarAnimais(Animal *animais, int totalAnimais) {
 }
 
 void atualizarCadastro(Animal *animais, int totalAnimais) {
-    char nome[20];
+    int id;
     int encontrado = 0;
     int escolha;
     int continuar = 1;
@@ -324,11 +324,11 @@ void atualizarCadastro(Animal *animais, int totalAnimais) {
     limparTerminal();
     imprimirTitulo(BG_BRIGHT_RED "📝 ATUALIZAR DADOS 📝" RESET);
 
-    printf(BRIGHT_RED "Digite o nome do animal que deseja atualizar: " RESET);
-    scanf(" %[^\n]", nome);
+    printf(BRIGHT_RED "Digite o ID do animal que deseja atualizar: " RESET);
+    scanf(" %d", &id);
 
     for (int i = 0; i < totalAnimais; i++) {
-        if (strcmp(animais[i].nomeanimal, nome) == 0) {
+        if (animais[i].id == id) {
             encontrado = 1;
             while (continuar) {
                 limparTerminal();
