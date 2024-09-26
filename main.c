@@ -87,6 +87,7 @@ void enableBufferedInput() {
 void aguardarTecla() {
     disableBufferedInput();
     printf("\nPressione qualquer tecla para voltar ao menu principal...");
+    while (getchar() != '\n');
     getchar();
     enableBufferedInput();
 }
@@ -494,6 +495,53 @@ void listarAlergias(Animal *animais, int totalAnimais) {
             printf(BRIGHT_BLUE "Alergias de %s:" RESET "\n", animais[i].nomeanimal);
             printf("════════════════════════════════════════════════════════════════════════════════\n");
 
+            int alergiasExibidas = 0;
+            for (int j = 0; j < MAX; j++) {
+                if (strlen(animais[i].alergia[j].descricao) > 0) {
+                    if (alergiasExibidas % 2 == 0) {
+                        printf(MAGENTA);
+                    } else {
+                        printf(BLUE);
+                    }
+
+                    printf("  %-18s \n" RESET, animais[i].alergia[j].descricao);
+                    alergiasExibidas++;
+                }
+            }
+
+            if (alergiasExibidas == 0) {
+                printf("   Nenhuma alergia cadastrada.\n\n");
+            }
+
+            printf("════════════════════════════════════════════════════════════════════════════════\n");
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf(RED "Animal não encontrado.\n" RESET);
+    }
+
+    aguardarTecla();
+}
+
+/*void listarAlergias(Animal *animais, int totalAnimais) {
+    char nome[20];
+    int encontrado = 0;
+    limparTerminal();
+    imprimirTitulo(BG_BRIGHT_BLUE "💊 LISTAR ALERGIAS 💊" RESET);
+
+    printf(BRIGHT_BLUE "Digite o nome do animal para listar alergias: " RESET);
+    scanf(" %[^\n]", nome);
+
+    limparTerminal();
+    imprimirTitulo(BG_BRIGHT_BLUE "💊 LISTAR ALERGIAS 💊" RESET);
+    for (int i = 0; i < totalAnimais; i++) {
+        if (strcmp(animais[i].nomeanimal, nome) == 0) {
+            printf(BRIGHT_BLUE "Alergias de %s:" RESET "\n", animais[i].nomeanimal);
+            printf("════════════════════════════════════════════════════════════════════════════════\n");
+
             for (int j = 0; j < MAX && strlen(animais[i].alergia[j].descricao) > 0; j++) {
                 if (j % 2 == 0) {
                     printf(MAGENTA);
@@ -515,7 +563,7 @@ void listarAlergias(Animal *animais, int totalAnimais) {
     }
 
     aguardarTecla();
-}
+}*/
 
 void listarVacinas(Animal *animais, int totalAnimais) {
     char nome[20];
@@ -534,6 +582,57 @@ void listarVacinas(Animal *animais, int totalAnimais) {
             printf("════════════════════════════════════════════════════════════════════════════════\n");
             printf(MAGENTA "  %-18s │ %-18s │ %-18s \n" RESET, "Nome", "Aplicacao", "Vencimento");
             printf("════════════════════════════════════════════════════════════════════════════════\n");
+
+            int vacinasExibidas = 0;
+            for (int j = 0; j < MAX; j++) {
+                if (strlen(animais[i].vac[j].nome) > 0) {
+                    if (vacinasExibidas % 2 == 0) {
+                        printf(BRIGHT_BLUE);
+                    } else {
+                        printf(BLUE);
+                    }
+
+                    printf("  %-18s │ %-18s │ %-18s \n" RESET,
+                        animais[i].vac[j].nome, animais[i].vac[j].dataapl, animais[i].vac[j].datavec);
+                    vacinasExibidas++;
+                }
+            }
+
+            if (vacinasExibidas == 0) {
+                printf("   Nenhuma vacina cadastrada.\n\n");
+            }
+
+            printf("════════════════════════════════════════════════════════════════════════════════\n");
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf(RED "Animal não encontrado.\n" RESET);
+    }
+
+    aguardarTecla();
+}
+
+/*void listarVacinas(Animal *animais, int totalAnimais) {
+    char nome[20];
+    int encontrado = 0;
+    limparTerminal();
+    imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
+
+    printf(MAGENTA "Digite o nome do animal para listar vacinas: " RESET);
+    scanf(" %[^\n]", nome);
+
+    limparTerminal();
+    imprimirTitulo(BG_MAGENTA "💉 MOSTRAR VACINAS 💉" RESET);
+    for (int i = 0; i < totalAnimais; i++) {
+        if (strcmp(animais[i].nomeanimal, nome) == 0) {
+            printf(MAGENTA "Vacinas de %s:" RESET "\n", animais[i].nomeanimal);
+            printf("════════════════════════════════════════════════════════════════════════════════\n");
+            printf(MAGENTA "  %-18s │ %-18s │ %-18s \n" RESET, "Nome", "Aplicacao", "Vencimento");
+            printf("════════════════════════════════════════════════════════════════════════════════\n");
+
 
             for (int j = 0; j < MAX && strlen(animais[i].vac[j].nome) > 0; j++) {
                 if (j % 2 == 0) {
@@ -557,7 +656,7 @@ void listarVacinas(Animal *animais, int totalAnimais) {
     }
 
     aguardarTecla();
-}
+} */
 
 void inicializarAnimais(Animal animais[]){
     strcpy(animais[0].tutor, "Davi Lucas");
