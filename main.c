@@ -400,7 +400,7 @@ void listarAnimais() {
     imprimirTitulo(BG_BRIGHT_MAGENTA "📂 LISTAR ANIMAIS CADASTRADOS 📂" RESET);
     if (totalAnimais == 0) {
         printf(RED "Nenhum animal cadastrado.\n" RESET);
-        aguardarTecla();
+        aguardarTeclaSemInte();
         return;
     }
 
