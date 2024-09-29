@@ -5,7 +5,7 @@
 #include <termios.h>
 
 #define DATA 12
-#define MAX 10
+#define MAX 50
 #define TAM_MAX 80
 
 #define UP_ARROW 65
@@ -47,7 +47,25 @@
 #define BG_BRIGHT_WHITE   "\033[107m"
 #define RESET "\033[0m"
 
-int ultimo_id = 5;
+int lerUltimoID() {
+    int id = 0;
+    FILE *file = fopen("ultimo_id.txt", "r");
+    if (file != NULL) {
+        if(fscanf(file, "%d", &id) != 1){
+            id = 0;
+        }
+        fclose(file);
+    }
+    return id;
+}
+
+void salvarUltimoID(int id) {
+    FILE *file = fopen("ultimo_id.txt", "w");
+    if (file != NULL) {
+        fprintf(file, "%d", id);
+        fclose(file);
+    }
+}
 
 typedef struct Alergias {
     char descricao[50];
@@ -209,9 +227,22 @@ char* primeiroNome(const char *nomeCompleto) {
     }
 }
 
+void salvarAnimalNoArquivo(Animal *animal) {
+    FILE *file = fopen("animais.bin", "ab");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para salvar os dados.\n");
+        return;
+    }
+
+    fwrite(animal, sizeof(Animal), 1, file);
+    fclose(file);
+}
+
 void cadastrarAnimal(Animal *animal) {
+    int ultimo_id = lerUltimoID();
     ultimo_id++;
     animal->id = ultimo_id;
+
     int quant;
 
     limparTerminal();
@@ -299,7 +330,26 @@ void cadastrarAnimal(Animal *animal) {
 
     limparTerminal();
     imprimirTitulo(BG_GREEN "🐶 CADASTRAR ANIMAIS 😺" RESET);
+    salvarUltimoID(ultimo_id);
+    salvarAnimalNoArquivo(animal);
     aguardarTecla();
+}
+
+int carregarAnimaisDoArquivo(Animal *animais) {
+    FILE *file = fopen("animais.bin", "rb");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }
+
+    int totalAnimais = 0;
+
+    while (fread(&animais[totalAnimais], sizeof(Animal), 1, file)) {
+        totalAnimais++;
+    }
+
+    fclose(file);
+    return totalAnimais;
 }
 
 void ordenarPorNome(Animal *animais, int totalAnimais) {
@@ -341,10 +391,18 @@ void ordenarPorID(Animal *animais, int totalAnimais) {
     }
 }
 
-void listarAnimais(Animal *animais, int totalAnimais) {
+void listarAnimais() {
     limparTerminal();
+    Animal animais[MAX];
     int escolha = 0;
+    int totalAnimais = carregarAnimaisDoArquivo(animais);
+
     imprimirTitulo(BG_BRIGHT_MAGENTA "📂 LISTAR ANIMAIS CADASTRADOS 📂" RESET);
+    if (totalAnimais == 0) {
+        printf(RED "Nenhum animal cadastrado.\n" RESET);
+        aguardarTecla();
+        return;
+    }
 
     printf(CYAN "Como você quer ordenar a listagem dos animais?\n1. Por animal 🐶😺\n2. Por tutor 🧑👧\n3. Por ID 🔢" RESET "\n");
     scanf(" %d", &escolha);
@@ -361,16 +419,9 @@ void listarAnimais(Animal *animais, int totalAnimais) {
     }else if(escolha == 3){
         ordenarPorID(animais, totalAnimais);
     }
+
     limparTerminal();
-
-
     imprimirTitulo(BG_BRIGHT_MAGENTA "📂 LISTAR ANIMAIS CADASTRADOS 📂" RESET);
-    if (totalAnimais == 0) {
-        printf(RED "Nenhum animal cadastrado.\n" RESET);
-        aguardarTecla();
-        return;
-    }
-
 
     printf("════════════════════════════════════════════════════════════════════════════════\n");
     printf(CYAN "  %-4s | %-14s │ %-14s │ %-14s │ %-14s \n" RESET, "ID", "Nome", "Tutor", "Especie", "Cor");
@@ -399,8 +450,6 @@ void listarAnimais(Animal *animais, int totalAnimais) {
 void mostrarAnimal(Animal *animais, int totalAnimais){
     int id;
     int encontrado = 0;
-    int escolha;
-    int continuar = 1;
 
     limparTerminal();
     imprimirTitulo(BG_YELLOW "🐰 DADOS COMPLETOS 🐶" RESET);
@@ -435,6 +484,7 @@ void mostrarAnimal(Animal *animais, int totalAnimais){
                     printf("   %d. Nome: %s\n   Data de Aplicação : %s\n   Data de Vencimento: %s\n\n", j + 1, animais[i].vac[j].nome, animais[i].vac[j].dataapl, animais[i].vac[j].datavec);
                 }
             }
+            break;
         }
     }
 
@@ -482,7 +532,8 @@ void atualizarCadastro(Animal *animais, int totalAnimais) {
                 printf("9. Vacinas:\n");
                 for (int j = 0; j < MAX; j++) {
                     if (strlen(animais[i].vac[j].nome) > 0) {
-                        printf("   %d. Nome: %s\n   Data de Aplicação : %s\n   Data de Vencimento: %s\n\n", j + 1, animais[i].vac[j].nome, animais[i].vac[j].dataapl, animais[i].vac[j].datavec);
+                        printf("   %d. Nome: %s\n   Data de Aplicação : %s\n   Data de Vencimento: %s\n\n",
+                               j + 1, animais[i].vac[j].nome, animais[i].vac[j].dataapl, animais[i].vac[j].datavec);
                     }
                 }
 
@@ -580,6 +631,14 @@ void atualizarCadastro(Animal *animais, int totalAnimais) {
 
     if (!encontrado) {
         printf("Animal não encontrado.\n");
+    } else {
+        FILE *arquivo = fopen("animais.bin", "wb");
+        if (arquivo == NULL) {
+            printf(RED "Erro ao abrir o arquivo para escrita." RESET "\n");
+            return;
+        }
+        fwrite(animais, sizeof(Animal), totalAnimais, arquivo);
+        fclose(arquivo);
     }
 
     aguardarTecla();
@@ -618,6 +677,15 @@ void deletarCadastro(Animal *animais, int *totalAnimais) {
     if (!encontrado) {
         printf(RED "Animal não encontrado." RESET "\n");
         aguardarTecla(); 
+    } else{
+        FILE *arquivo = fopen("animais.bin", "wb");
+        if (arquivo == NULL) {
+            printf(RED "Erro ao abrir o arquivo para escrita." RESET "\n");
+            return;
+        }
+
+        fwrite(animais, sizeof(Animal), *totalAnimais, arquivo);
+        fclose(arquivo);
     }
 }
 
@@ -718,81 +786,12 @@ void listarVacinas(Animal *animais, int totalAnimais) {
     aguardarTecla();
 }
 
-void inicializarAnimais(Animal animais[]){
-    animais[0].id = 1;
-    strcpy(animais[0].tutor, "Davi Lucas");
-    strcpy(animais[0].contato, "(88) 98765-4321");
-    strcpy(animais[0].nomeanimal, "Emilia");
-    animais[0].idade = 5;
-    strcpy(animais[0].cor, "Rajada verde");
-    strcpy(animais[0].sexo, "Femea");
-    strcpy(animais[0].especie, "Gato domestico");
-    strcpy(animais[0].alergia[0].descricao, "Pulga");
-    strcpy(animais[0].vac[0].nome, "Raiva");
-    strcpy(animais[0].vac[0].dataapl, "10/01/2023");
-    strcpy(animais[0].vac[0].datavec, "10/01/2024");
-
-    animais[1].id = 2;
-    strcpy(animais[1].tutor, "Joyce Vieira");
-    strcpy(animais[1].contato, "(88) 99876-5432");
-    strcpy(animais[1].nomeanimal, "Tuko Jr");
-    animais[1].idade = 3;
-    strcpy(animais[1].cor, "Preto");
-    strcpy(animais[1].sexo, "Macho");
-    strcpy(animais[1].especie, "Gato domestico");
-    strcpy(animais[1].alergia[0].descricao, "Poeira");
-    strcpy(animais[1].vac[0].nome, "V5");
-    strcpy(animais[1].vac[0].dataapl, "15/02/2023");
-    strcpy(animais[1].vac[0].datavec, "15/02/2024");
-
-    animais[2].id = 3;
-    strcpy(animais[2].tutor, "William Mendes");
-    strcpy(animais[2].contato, "(88) 91234-5678");
-    strcpy(animais[2].nomeanimal, "Jade");
-    animais[2].idade = 7;
-    strcpy(animais[2].cor, "Preto");
-    strcpy(animais[2].sexo, "Femea");
-    strcpy(animais[2].especie, "Pinsher");
-    strcpy(animais[2].alergia[0].descricao, "Acaro");
-    strcpy(animais[2].vac[0].nome, "Leptospirose");
-    strcpy(animais[2].vac[0].dataapl, "05/03/2023");
-    strcpy(animais[2].vac[0].datavec, "05/03/2024");
-
-
-    animais[3].id = 4;
-    strcpy(animais[3].tutor, "Luidy Farias");
-    strcpy(animais[3].contato, "(88) 95678-1234");
-    strcpy(animais[3].nomeanimal, "Lady");
-    animais[3].idade = 2;
-    strcpy(animais[3].cor, "Preta");
-    strcpy(animais[3].sexo, "Femea");
-    strcpy(animais[3].especie, "Salsicha");
-    strcpy(animais[3].alergia[0].descricao, "Feno");
-    strcpy(animais[3].vac[0].nome, "Mixomatose");
-    strcpy(animais[3].vac[0].dataapl, "20/04/2023");
-    strcpy(animais[3].vac[0].datavec, "20/04/2024");
-
-    animais[4].id = 5;
-    strcpy(animais[4].tutor, "Joyce Vieira");
-    strcpy(animais[4].contato, "(88) 99876-5432");
-    strcpy(animais[4].nomeanimal, "Louis");
-    animais[4].idade = 4;
-    strcpy(animais[4].cor, "Cinza");
-    strcpy(animais[4].sexo, "Macho");
-    strcpy(animais[4].especie, "Gato domestico");
-    strcpy(animais[4].alergia[0].descricao, "Poeira");
-    strcpy(animais[4].vac[0].nome, "Polivalente");
-    strcpy(animais[4].vac[0].dataapl, "30/05/2023");
-    strcpy(animais[4].vac[0].datavec, "30/05/2024");
-}
-
 int main() {
     Animal animais[MAX];
-    inicializarAnimais(animais);
-    int totalAnimais = 5;
+    int totalAnimais;
+    totalAnimais = carregarAnimaisDoArquivo(animais);
     int selected = 0;
     char key;
-
 
     while (1) {
         printMenu(selected);
@@ -817,7 +816,7 @@ int main() {
                     totalAnimais++;
                     break;
                 case 1:
-                    listarAnimais(animais, totalAnimais);
+                    listarAnimais();
                     break;
                 case 2:
                     mostrarAnimal(animais, totalAnimais);
@@ -841,55 +840,3 @@ int main() {
         }
     }
 }
-/*int main() {
-    Animal animais[MAX];
-    inicializarAnimais(animais);
-    int totalAnimais = 5;
-    int selected = 0;
-    char key;
-
-
-    while (1) {
-        printMenu(selected);
-        disableBufferedInput();
-        key = getchar();
-        enableBufferedInput();
-
-        if (key == '\033') {
-            getchar(); 
-            switch(getchar()) { 
-                case UP_ARROW:
-                    selected = (selected == 0) ? 6 : selected - 1;
-                    break;
-                case DOWN_ARROW:
-                    selected = (selected == 6) ? 0 : selected + 1;
-                    break;
-            }
-        } else if (key == ENTER) {
-            switch (selected) {
-                case 0:
-                    cadastrarAnimal(&animais[totalAnimais]);
-                    totalAnimais++;
-                    break;
-                case 1:
-                    listarAnimais(animais, totalAnimais);
-                    break;
-                case 2:
-                    atualizarCadastro(animais, totalAnimais);
-                    break;
-                case 3:
-                    deletarCadastro(animais, &totalAnimais);
-                    break;
-                case 4:
-                    listarAlergias(animais, totalAnimais);
-                    break;
-                case 5:
-                    listarVacinas(animais, totalAnimais);
-                    break;
-                case 6: 
-                    exit(0);
-                    break;
-            }
-        }
-    }
-}*/
